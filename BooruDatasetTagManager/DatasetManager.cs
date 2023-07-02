@@ -79,6 +79,12 @@ namespace BooruDatasetTagManager
                 .ToList();
         }
 
+        public List<TagValue> GetFilteredAllTags(string filterText)
+        {
+            return AllTags.Where(a=>a.Tag.Contains(filterText)).ToList();
+        }
+
+
         public bool Remove(string name)
         {
             return DataSet.TryRemove(name, out _);
@@ -317,11 +323,15 @@ namespace BooruDatasetTagManager
             return delList;
         }
 
-        public void LoadFromFolder(string folder, bool fixTags)
+        public bool LoadFromFolder(string folder, bool fixTags)
         {
-            List<string> imagesExt = new List<string>() { ".jpg", ".png", ".bmp", ".jpeg" };
+            List<string> imagesExt = new List<string>() { ".jpg", ".png", ".bmp", ".jpeg", ".webp" };
             string[] imgs = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
-
+            if (imgs.Length == 0)
+            {
+                IsLossLoaded = false;
+                return false;
+            }
             imgs = imgs.Where(a => imagesExt.Contains(Path.GetExtension(a).ToLower())).OrderBy(a => a, new FileNamesComparer()).ToArray();
             int imgSize = Program.Settings.PreviewSize;
             imgs.AsParallel().ForAll(x =>
@@ -331,6 +341,7 @@ namespace BooruDatasetTagManager
             });
             UpdateDatasetHash();
             IsLossLoaded = false;
+            return true;
         }
 
         private ImageList GetImageList(int w, int h)
@@ -479,9 +490,11 @@ namespace BooruDatasetTagManager
                 }
             }
 
+
             Image MakeThumb(string imagePath, int imgSize)
             {
-                using (var img = Image.FromFile(imagePath))
+
+                using (var img = Extensions.GetImageFromFile(imagePath))
                 {
                     var aspect = img.Width / (float)img.Height;
 

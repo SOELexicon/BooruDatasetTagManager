@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
 
 namespace BooruDatasetTagManager
 {
@@ -19,12 +20,13 @@ namespace BooruDatasetTagManager
         {
             Application.EnableVisualStyles();
 #if NET5_0_OR_GREATER
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 #endif
             Application.SetCompatibleTextRenderingDefault(false);
             Settings = new AppSettings(Application.StartupPath);
             #region waitForm
             Form f_wait = new Form();
+            f_wait.AutoScaleMode = AutoScaleMode.Dpi;
             f_wait.Width = 300;
             f_wait.Height = 100;
             f_wait.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -34,6 +36,7 @@ namespace BooruDatasetTagManager
             mes.Text = "Please wait while the tags are loading.\nWhen changing csv or txt files,\nthe initial loading of tags may take a long time.";
             mes.Location = new System.Drawing.Point(10, 10);
             mes.AutoSize = true;
+
             f_wait.Controls.Add(mes);
             
             f_wait.Shown += async (o, i) =>
@@ -50,10 +53,13 @@ namespace BooruDatasetTagManager
                         Directory.CreateDirectory(tagsDir);
                     string tagFile = Path.Combine(tagsDir, "List.tdb");
                     TagsList = TagsDB.LoadFromTagFile(tagFile);
+                    if (TagsList == null)
+                        TagsList = new TagsDB();
                     if (TagsList.IsNeedUpdate(tagsDir))
                     {
                         TagsList.ClearDb();
                         TagsList.ClearLoadedFiles();
+                        TagsList.ResetVersion();
                         TagsList.LoadCSVFromDir(tagsDir);
                         TagsList.LoadTxtFromDir(tagsDir);
                         TagsList.SortTags();

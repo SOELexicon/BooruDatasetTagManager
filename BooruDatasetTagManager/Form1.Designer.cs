@@ -81,6 +81,9 @@ namespace BooruDatasetTagManager
             toolStripButton18 = new System.Windows.Forms.ToolStripButton();
             toolStripButton13 = new System.Windows.Forms.ToolStripButton();
             toolStripButton14 = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripButton24 = new System.Windows.Forms.ToolStripButton();
+            toolStripButton25 = new System.Windows.Forms.ToolStripButton();
             statusStrip1 = new System.Windows.Forms.StatusStrip();
             statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -458,7 +461,7 @@ namespace BooruDatasetTagManager
             // 
             toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
             toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripButton6, toolStripButton7, toolStripButton12, toolStripButton8, toolStripSeparator3, toolStripButton19, toolStripButton20, toolStripSeparator5, toolStripButton21, toolStripButton22, toolStripSeparator6, toolStripButton18, toolStripButton13, toolStripButton14 });
+            toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripButton6, toolStripButton7, toolStripButton12, toolStripButton8, toolStripSeparator3, toolStripButton19, toolStripButton20, toolStripSeparator5, toolStripButton21, toolStripButton22, toolStripSeparator6, toolStripButton18, toolStripButton13, toolStripButton14, toolStripSeparator8, toolStripButton24, toolStripButton25 });
             toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.VerticalStackWithOverflow;
             toolStrip1.Location = new System.Drawing.Point(368, 30);
             toolStrip1.Name = "toolStrip1";
@@ -593,6 +596,31 @@ namespace BooruDatasetTagManager
             toolStripButton14.Text = "Reset filter";
             toolStripButton14.Click += toolStripButton14_Click;
             // 
+            // toolStripSeparator8
+            // 
+            toolStripSeparator8.Name = "toolStripSeparator8";
+            toolStripSeparator8.Size = new System.Drawing.Size(33, 6);
+            // 
+            // toolStripButton24
+            // 
+            toolStripButton24.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripButton24.Image = Properties.Resources.filterAdd;
+            toolStripButton24.ImageTransparentColor = System.Drawing.Color.Magenta;
+            toolStripButton24.Name = "toolStripButton24";
+            toolStripButton24.Size = new System.Drawing.Size(33, 36);
+            toolStripButton24.Text = "Filter in all tags";
+            toolStripButton24.Click += toolStripButton24_Click;
+            // 
+            // toolStripButton25
+            // 
+            toolStripButton25.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            toolStripButton25.Image = Properties.Resources.filterRemove;
+            toolStripButton25.ImageTransparentColor = System.Drawing.Color.Magenta;
+            toolStripButton25.Name = "toolStripButton25";
+            toolStripButton25.Size = new System.Drawing.Size(33, 36);
+            toolStripButton25.Text = "Remove filter";
+            toolStripButton25.Click += toolStripButton25_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new System.Drawing.Size(28, 28);
@@ -684,6 +712,7 @@ namespace BooruDatasetTagManager
             gridViewDS.SelectionChanged += dataGridView3_SelectionChanged;
             gridViewDS.Enter += gridView_Enter;
             gridViewDS.KeyDown += gridViewDS_KeyDown;
+            gridViewDS.KeyUp += gridViewDS_KeyUp;
             gridViewDS.Leave += gridView_Leave;
             gridViewDS.MouseDoubleClick += gridViewDS_MouseDoubleClick;
             // 
@@ -739,8 +768,8 @@ namespace BooruDatasetTagManager
             // 
             // Form1
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             ClientSize = new System.Drawing.Size(1224, 728);
             Controls.Add(splitContainer1);
             Controls.Add(statusStrip1);
@@ -837,6 +866,9 @@ namespace BooruDatasetTagManager
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripButton toolStripButton24;
+        private System.Windows.Forms.ToolStripButton toolStripButton25;
     }
 }
 

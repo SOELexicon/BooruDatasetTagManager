@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Translator.Crypto;
+using System.Drawing;
 
 namespace BooruDatasetTagManager
 {
@@ -18,7 +20,10 @@ namespace BooruDatasetTagManager
                 list.Add(new TagValue(item));
         }
 
-
+        public static long GetHash(this string text)
+        {
+            return Adler32.GenerateHash(text);
+        }
 
         public static object LoadDataSet(string path)
         {
@@ -88,6 +93,35 @@ namespace BooruDatasetTagManager
                 }
             }
             return String.Empty;
+        }
+
+        public static Image GetImageFromFile(string imagePath)
+        {
+            bool isWebP = false;
+            using (FileStream fs = new FileStream(imagePath, FileMode.Open))
+            {
+                if (fs.Length < 4)
+                    return null;
+                byte[] signature = new byte[4];
+                fs.Read(signature, 0, 4);
+                if (BitConverter.ToInt32(signature, 0) == 1179011410 || BitConverter.ToInt32(signature, 0) == 1346520407)
+                    isWebP = true;
+            }
+
+            if (!isWebP)
+            {
+                using (var img = Image.FromFile(imagePath))
+                {
+                    return new Bitmap(img);
+                }
+            }
+            else
+            {
+                using (WebPWrapper.WebP wp = new WebPWrapper.WebP())
+                {
+                    return wp.Load(imagePath);
+                }
+            }
         }
     }
 }

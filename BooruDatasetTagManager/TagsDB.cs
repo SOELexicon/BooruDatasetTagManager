@@ -12,16 +12,18 @@ namespace BooruDatasetTagManager
     [Serializable]
     public class TagsDB
     {
+        public int Version;
         public List<TagItem> Tags;
         public Dictionary<string, long> LoadedFiles;
-
-        private Dictionary<int, int> hashes;
+        private Dictionary<long, int> hashes;
+        private const int curVersion = 100;
 
         public TagsDB()
         {
+            Version = curVersion;
             Tags = new List<TagItem>();
             LoadedFiles = new Dictionary<string, long>();
-            hashes = new Dictionary<int, int>();
+            hashes = new Dictionary<long, int>();
         }
 
         private string[] ReadAllLines(byte[] data, Encoding encoding)
@@ -45,6 +47,12 @@ namespace BooruDatasetTagManager
         public void ClearDb()
         {
             Tags.Clear();
+            hashes.Clear();
+        }
+
+        public void ResetVersion()
+        {
+            Version = curVersion;
         }
 
         public void ClearLoadedFiles()
@@ -142,13 +150,11 @@ namespace BooruDatasetTagManager
         {
             if (string.IsNullOrWhiteSpace(tag))
                 return;
-            tag = tag.Replace('_', ' ');
-            tag = tag.Replace("\\(", "(");
-            tag = tag.Replace("\\)", ")");
+            tag = PrepareTag(tag);
             if (Tags.Exists(a => a.Parent == tag))
                 return;
             tag = tag.Trim().ToLower();
-            int tagHash = tag.GetHashCode();
+            long tagHash = tag.GetHash();
 
             int existTagIndex = -1;
             TagItem tagItem = null;
@@ -163,14 +169,26 @@ namespace BooruDatasetTagManager
                 tagItem.SetTag(tag);
                 tagItem.Count = count;
                 tagItem.IsAlias = isAlias;
-                tagItem.Parent = parent;
+                tagItem.Parent = PrepareTag(parent);
                 hashes.Add(tagItem.TagHash, Tags.Count);
                 Tags.Add(tagItem);
             }
         }
 
+        private string PrepareTag(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return tag;
+            tag = tag.Replace('_', ' ');
+            tag = tag.Replace("\\(", "(");
+            tag = tag.Replace("\\)", ")");
+            return tag;
+        }
+
         public bool IsNeedUpdate(string dirToCheck)
         {
+            if (Version != curVersion)
+                return true;
             FileInfo[] tagFiles = new DirectoryInfo(dirToCheck).GetFiles("*.csv", SearchOption.TopDirectoryOnly).
                 Concat(new DirectoryInfo(dirToCheck).GetFiles("*.txt", SearchOption.TopDirectoryOnly)).ToArray();
             if (tagFiles.Length == 0)
@@ -202,7 +220,14 @@ namespace BooruDatasetTagManager
         {
             if (File.Exists(fPath))
             {
-                return (TagsDB)Extensions.LoadDataSet(File.ReadAllBytes(fPath));
+                try
+                {
+                    return (TagsDB)Extensions.LoadDataSet(File.ReadAllBytes(fPath));
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
             else
                 return new TagsDB();
@@ -217,7 +242,7 @@ namespace BooruDatasetTagManager
         public class TagItem
         {
             public string Tag { get; private set; }
-            public int TagHash { get; private set; }
+            public long TagHash { get; private set; }
             public int Count;
             //public List<string> Aliases;
             public bool IsAlias;
@@ -233,7 +258,7 @@ namespace BooruDatasetTagManager
             public void SetTag(string tag)
             {
                 Tag = tag.Trim().ToLower();
-                TagHash = Tag.GetHashCode();
+                TagHash = Tag.GetHash();
             }
 
             public string GetTag()

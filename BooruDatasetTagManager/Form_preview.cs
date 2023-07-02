@@ -29,8 +29,9 @@ namespace BooruDatasetTagManager
 
         public void Show(string img)
         {
-            pictureBox1.Image = Image.FromFile(img);
-            
+            pictureBox1.Image?.Dispose();
+            pictureBox1.Image = Extensions.GetImageFromFile(img);
+
             if (!loaded)
             {
                 this.AutoSize = false;
@@ -44,7 +45,7 @@ namespace BooruDatasetTagManager
 
         private void Form_preview_VisibleChanged(object sender, EventArgs e)
         {
-            if(!this.Visible)
+            if (!this.Visible)
             {
                 if (pictureBox1.Image != null)
                     pictureBox1.Image.Dispose();
